@@ -70,4 +70,4 @@ def load_data(file):
         'prices': prices, 
         'strategies': strategies,
         'orders': orders
-    } 
+    }
