@@ -2,7 +2,6 @@
 # coding: utf-8
 
 import matplotlib.pyplot as plt
-import matplotlib.dates as md
 import matplotlib.animation as animation
 from capybot import load_data
 import sys
@@ -29,14 +28,14 @@ def animate_strategies(j):
     # instances should be done in a static manner, without animation
     data = load_data(file);
 
-    # if only one arbitrage strategy is being used, the ax object is not iterable,
-    # and will not be subscriptable - thus the checked
-    if number_of_strategies > 1:
-        ax_object = ax[i]
-    else:
-        ax_object = ax
-
     for i, uri in enumerate(data['strategies']):
+        # if only one arbitrage strategy is being used, the ax object is not iterable,
+        # and will not be subscriptable - thus the check
+        if number_of_strategies > 1:
+            ax_object = ax[i]
+        else:
+            ax_object = ax
+
         strategy = data['strategies'][uri]
         ax_object.clear()
         ax_object.set_title(strategy['parameters']['name'] + "")
