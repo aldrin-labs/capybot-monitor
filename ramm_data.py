@@ -18,7 +18,7 @@ file = sys.argv[1]
 data = load_data(file);
 number_of_ramms = len(data['ramm_pool_states']);
 
-fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (6, 10));
+fig, ax = plt.subplots(nrows = number_of_ramms, ncols = 1, figsize = (6, 10));
 fig.tight_layout(pad=2.0)
 
 def animate_ramm_data(j):
@@ -32,8 +32,6 @@ def animate_ramm_data(j):
         ax_object = ax[i]
     else:
         ax_object = ax
-
-    print(data['ramm_pool_states'])
 
     for i, ramm_id in enumerate(data['ramm_pool_states']):
         pool_state = data['ramm_pool_states'][ramm_id]
@@ -53,11 +51,15 @@ def animate_ramm_data(j):
         if len(pool_state['data']) == 0:
             break
 
-        return
+        #print(data['ramm_pool_states'])
 
-        for key in pool_state['statuses']['value'][0]:
-            y = list(map(lambda x: x[key], pool_state['statuses']['value']))
-            ax_object.plot(timestamps, y, label = key)
+        for key in pool_state['data'][0]:
+            asset_balances = list(map(lambda x: x[key], pool_state['data']))
+            ax_object.plot(timestamps, asset_balances, label = 'Balance for ' + key)
+
+        ax_object.legend();
+
+        return
 
         # A trade order is indicated by a vertical red line
         if ramm_id in data['orders']:
@@ -67,13 +69,13 @@ def animate_ramm_data(j):
             for order_t in order_ts:
                 ax_object.axvline(x = order_t, color = 'r', linestyle = '-.', alpha = 0.05)
 
-        ax_object.legend();
+        
 
 switch = sys.argv[2]
 
 if switch == '--static':
     animate_ramm_data(0)
-    #plt.show()
+    plt.show()
 elif switch == '--dynamic':
     anim = animation.FuncAnimation(fig, func = animate_ramm_data, interval = 1000)
     plt.show()
