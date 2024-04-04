@@ -60,6 +60,16 @@ def load_data(file):
                             }
                         orders[strategy]['time'].append(data['time'] / 1000);
 
+                    # The data below pertains *only* to `capybot`'s RAMMs
+                    case "ramm pool state":
+                        continue
+
+                    case "imb ratios":
+                        continue
+
+                    case "ramm volumes":
+                        continue
+
                     case _:
                         continue
                      
