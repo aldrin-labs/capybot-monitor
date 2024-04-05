@@ -21,7 +21,7 @@ number_of_ramms = len(data['ramm_pool_states']);
 fig, ax = plt.subplots(nrows = number_of_ramms, ncols = 1, figsize = (6, 10));
 fig.tight_layout(pad=2.0)
 
-def animate_ramm_data(j):
+def animate_ramm_data():
     # Recall that this is going to be done once a second - visualizing logs from long-running
     # instances should be done in a static manner, without animation
     data = load_data(file);
@@ -59,22 +59,11 @@ def animate_ramm_data(j):
 
         ax_object.legend();
 
-        return
-
-        # A trade order is indicated by a vertical red line
-        if ramm_id in data['orders']:
-            order_ts = [ts - start_ts for ts in data['orders'][ramm_id]['time']];
-            # Set the label for all trade orders once
-            ax_object.axvline(color = 'r', label = 'Trade order')
-            for order_t in order_ts:
-                ax_object.axvline(x = order_t, color = 'r', linestyle = '-.', alpha = 0.05)
-
-        
-
+# Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
 
 if switch == '--static':
-    animate_ramm_data(0)
+    animate_ramm_data()
     plt.show()
 elif switch == '--dynamic':
     anim = animation.FuncAnimation(fig, func = animate_ramm_data, interval = 1000)
