@@ -22,8 +22,10 @@ POOL_STATE_PLOT_INDEX = 0
 IMB_RATIO_PLOT_INDEX = 1
 VOLUME_PLOT_INDEX = 2
 
-fig, ax = plt.subplots(nrows = number_of_ramms, ncols = 3, figsize = (20, 4));
-fig.tight_layout(pad=2.0)
+PLOTS_PER_RAMM = 3
+
+fig, ax = plt.subplots(nrows = number_of_ramms, ncols = PLOTS_PER_RAMM, figsize = (22, 5 * number_of_ramms));
+fig.tight_layout(pad=4.0)
 
 colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
 
@@ -32,12 +34,18 @@ def animate_ramm_data():
     # instances should be done in a static manner, without animation
     data = load_data(file);
 
-    for i, ramm_id in enumerate(data['ramm_pool_states']):
-        pool_state = data['ramm_pool_states'][ramm_id]
-        ax[POOL_STATE_PLOT_INDEX].clear()
+    if number_of_ramms == 1:
+        subplot_matrix = [ax]
+    else:
+        subplot_matrix = ax
 
-        ax[POOL_STATE_PLOT_INDEX].set_xlabel('Time (s)')
-        ax[POOL_STATE_PLOT_INDEX].set_ylabel('Asset balances')
+    for r, ramm_id in enumerate(data['ramm_pool_states']):
+        # RAMM pool state plots
+        pool_state = data['ramm_pool_states'][ramm_id]
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].clear()
+
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_xlabel('Time (s)')
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_ylabel('Asset balances')
 
         timestamps = pool_state['time']
         start_ts = timestamps[0]
@@ -53,19 +61,19 @@ def animate_ramm_data():
 
         for col_idx, key in enumerate(pool_state['data'][0]):
             asset_balances = list(map(lambda x: x[key], pool_state['data']))
-            ax[POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
+            subplot_matrix[r][POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
 
         # Reasoning for the legend placement:
         # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
-        ax[POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-        ax[POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
 
-    for i, ramm_id in enumerate(data['ramm_imb_ratios']):
+        # RAMM imbalance ratio plots
         imb_ratio = data['ramm_imb_ratios'][ramm_id]
-        ax[IMB_RATIO_PLOT_INDEX].clear()
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].clear()
 
-        ax[IMB_RATIO_PLOT_INDEX].set_xlabel('Time (s)')
-        ax[IMB_RATIO_PLOT_INDEX].set_ylabel('Imbalance ratios')
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_xlabel('Time (s)')
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_ylabel('Imbalance ratios')
 
         timestamps = imb_ratio['time']
         start_ts = timestamps[0]
@@ -79,16 +87,17 @@ def animate_ramm_data():
 
         for col_idx, key in enumerate(imb_ratio['data'][0]):
             imb_ratios = list(map(lambda x: x[key], imb_ratio['data']))
-            ax[IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = key + ' imb. ratio', color = colors[col_idx])
+            subplot_matrix[r][IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = key + ' imb. ratio', color = colors[col_idx])
 
-        ax[IMB_RATIO_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-        ax[IMB_RATIO_PLOT_INDEX].set_facecolor('xkcd:navy blue')
-    for i, ramm_id in enumerate(data['ramm_volumes']):
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_facecolor('xkcd:navy blue')
+
+        # RAMM trading volume plots
         volume = data['ramm_volumes'][ramm_id]
-        ax[VOLUME_PLOT_INDEX].clear()
+        subplot_matrix[r][VOLUME_PLOT_INDEX].clear()
 
-        ax[VOLUME_PLOT_INDEX].set_xlabel('Time (s)')
-        ax[VOLUME_PLOT_INDEX].set_ylabel('Trading volumes')
+        subplot_matrix[r][VOLUME_PLOT_INDEX].set_xlabel('Time (s)')
+        subplot_matrix[r][VOLUME_PLOT_INDEX].set_ylabel('Trading volumes')
 
         timestamps = volume['time']
         start_ts = timestamps[0]
@@ -102,10 +111,10 @@ def animate_ramm_data():
 
         for col_idx, key in enumerate(imb_ratio['data'][0]):
             volumes = list(map(lambda x: x[key], volume['data']))
-            ax[VOLUME_PLOT_INDEX].plot(timestamps, volumes, label = key + ' volume', color = colors[col_idx])
+            subplot_matrix[r][VOLUME_PLOT_INDEX].plot(timestamps, volumes, label = key + ' volume', color = colors[col_idx])
 
-        ax[VOLUME_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-        ax[VOLUME_PLOT_INDEX].set_facecolor('xkcd:navy blue')
+        subplot_matrix[r][VOLUME_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        subplot_matrix[r][VOLUME_PLOT_INDEX].set_facecolor('xkcd:navy blue')
 
 # Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
