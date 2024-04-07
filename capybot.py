@@ -11,6 +11,7 @@ def load_data(file):
     # RAMM data
     ramm_pool_states = {}
     ramm_imb_ratios = {}
+    ramm_volumes = {}
 
     with open(file) as f:
         for line in f.read().splitlines():
@@ -91,7 +92,17 @@ def load_data(file):
                         ramm_imb_ratios[ramm_id]['data'].append(imb_ratios)
 
                     case "ramm volumes":
-                        continue
+                        ramm_id = line_data['ramm_id']
+                        if ramm_id not in ramm_volumes:
+                            ramm_volumes[ramm_id] = {
+                                'time': [],
+                                'data': []
+                            }
+                        volumes = line_data['data']
+                        timestamp = line_data['time'] / 1000
+
+                        ramm_volumes[ramm_id]['time'].append(timestamp)
+                        ramm_volumes[ramm_id]['data'].append(volumes)
 
                     case _:
                         continue
@@ -104,5 +115,6 @@ def load_data(file):
         'strategies': strategies,
         'orders': orders,
         'ramm_pool_states': ramm_pool_states,
-        'ramm_imb_ratios': ramm_imb_ratios
+        'ramm_imb_ratios': ramm_imb_ratios,
+        'ramm_volumes': ramm_volumes
     }
