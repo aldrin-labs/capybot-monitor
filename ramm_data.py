@@ -55,6 +55,8 @@ def animate_ramm_data():
             asset_balances = list(map(lambda x: x[key], pool_state['data']))
             ax[POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
 
+        # Reasoning for the legend placement:
+        # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
         ax[POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
         ax[POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
 
