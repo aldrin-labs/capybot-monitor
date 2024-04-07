@@ -20,11 +20,12 @@ number_of_ramms = len(data['ramm_pool_states']);
 
 POOL_STATE_PLOT_INDEX = 0
 IMB_RATIO_PLOT_INDEX = 1
+VOLUME_PLOT_INDEX = 2
 
-fig, ax = plt.subplots(nrows = number_of_ramms, ncols = 2, figsize = (16, 9));
+fig, ax = plt.subplots(nrows = number_of_ramms, ncols = 3, figsize = (20, 4));
 fig.tight_layout(pad=2.0)
 
-colors = ["#7aa0c4", "#ca82e1", "#8bcd50"]
+colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
 
 def animate_ramm_data():
     # Recall that this is going to be done once a second - visualizing logs from long-running
@@ -52,7 +53,7 @@ def animate_ramm_data():
 
         for col_idx, key in enumerate(pool_state['data'][0]):
             asset_balances = list(map(lambda x: x[key], pool_state['data']))
-            ax[POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = 'Balance for ' + key, color = colors[col_idx])
+            ax[POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
 
         ax[POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
         ax[POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
@@ -76,10 +77,33 @@ def animate_ramm_data():
 
         for col_idx, key in enumerate(imb_ratio['data'][0]):
             imb_ratios = list(map(lambda x: x[key], imb_ratio['data']))
-            ax[IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = 'Imbalance ratio for ' + key, color = colors[col_idx])
+            ax[IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = key + ' imb. ratio', color = colors[col_idx])
 
         ax[IMB_RATIO_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
         ax[IMB_RATIO_PLOT_INDEX].set_facecolor('xkcd:navy blue')
+    for i, ramm_id in enumerate(data['ramm_volumes']):
+        volume = data['ramm_volumes'][ramm_id]
+        ax[VOLUME_PLOT_INDEX].clear()
+
+        ax[VOLUME_PLOT_INDEX].set_xlabel('Time (s)')
+        ax[VOLUME_PLOT_INDEX].set_ylabel('Trading volumes')
+
+        timestamps = volume['time']
+        start_ts = timestamps[0]
+
+        # Convert UNIX timestamps to seconds since the start of the simulation
+        timestamps = [ts - start_ts for ts in timestamps]
+
+        # No recorded states, skip
+        if len(volume['data']) == 0:
+            break
+
+        for col_idx, key in enumerate(imb_ratio['data'][0]):
+            volumes = list(map(lambda x: x[key], volume['data']))
+            ax[VOLUME_PLOT_INDEX].plot(timestamps, volumes, label = key + ' volume', color = colors[col_idx])
+
+        ax[VOLUME_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        ax[VOLUME_PLOT_INDEX].set_facecolor('xkcd:navy blue')
 
 # Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
