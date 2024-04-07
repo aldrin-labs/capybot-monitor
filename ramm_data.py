@@ -55,6 +55,7 @@ def animate_ramm_data():
             ax[POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = 'Balance for ' + key, color = colors[col_idx])
 
         ax[POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        ax[POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
 
     for i, ramm_id in enumerate(data['ramm_imb_ratios']):
         imb_ratio = data['ramm_imb_ratios'][ramm_id]
@@ -78,11 +79,12 @@ def animate_ramm_data():
             ax[IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = 'Imbalance ratio for ' + key, color = colors[col_idx])
 
         ax[IMB_RATIO_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+        ax[IMB_RATIO_PLOT_INDEX].set_facecolor('xkcd:navy blue')
 
 # Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
 
-plt.subplots_adjust(top=0.9)
+plt.subplots_adjust(top=0.92)
 
 if switch == '--static':
     animate_ramm_data()
