@@ -27,7 +27,34 @@ PLOTS_PER_RAMM = 3
 fig, ax = plt.subplots(nrows = number_of_ramms, ncols = PLOTS_PER_RAMM, figsize = (22, 5 * number_of_ramms));
 fig.tight_layout(pad=4.0)
 
+# Colors to use when plotting per-asset RAMM data.
+# See https://xkcd.com/color/rgb/
 colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
+
+def ramm_data_helper(*, datum, subplot_matrix, subplot_row_index, datum_id, datum_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
+    subplot_matrix[subplot_row_index][subplot_col_index].clear()
+
+    subplot_matrix[subplot_row_index][subplot_col_index].set_xlabel(xlabel)
+    subplot_matrix[subplot_row_index][subplot_col_index].set_ylabel(ylabel)
+
+    timestamps = datum['time']
+    start_ts = timestamps[0]
+
+    # Convert UNIX timestamps to seconds since the start of the simulation
+    timestamps = [ts - start_ts for ts in timestamps]
+
+    # No recorded states, skip
+    if len(datum['data']) == 0:
+        return
+
+    for col_idx, key in enumerate(datum['data'][0]):
+        asset_data = list(map(lambda x: x[key], datum['data']))
+        subplot_matrix[subplot_row_index][subplot_col_index].plot(timestamps, asset_data, label = key + subplot_label_suffix, color = colors[col_idx])
+
+    # Reasoning for the legend placement:
+    # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
+    subplot_matrix[subplot_row_index][subplot_col_index].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
+    subplot_matrix[subplot_row_index][subplot_col_index].set_facecolor('xkcd:midnight blue')
 
 def animate_ramm_data():
     # Recall that this is going to be done once a second - visualizing logs from long-running
