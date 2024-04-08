@@ -31,7 +31,7 @@ fig.tight_layout(pad=4.0)
 # See https://xkcd.com/color/rgb/
 colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
 
-def ramm_data_helper(*, datum, subplot_matrix, subplot_row_index, datum_id, datum_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
+def ramm_data_helper(*, datum, subplot_matrix, subplot_row_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
     subplot_matrix[subplot_row_index][subplot_col_index].clear()
 
     subplot_matrix[subplot_row_index][subplot_col_index].set_xlabel(xlabel)
@@ -69,29 +69,14 @@ def animate_ramm_data():
     for r, ramm_id in enumerate(data['ramm_pool_states']):
         # RAMM pool state plots
         pool_state = data['ramm_pool_states'][ramm_id]
-        subplot_matrix[r][POOL_STATE_PLOT_INDEX].clear()
-
-        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_xlabel('Time (s)')
-        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_ylabel('Asset balances')
-
-        timestamps = pool_state['time']
-        start_ts = timestamps[0]
-
-        # Convert UNIX timestamps to seconds since the start of the simulation
-        timestamps = [ts - start_ts for ts in timestamps]
-
-        # No recorded states, skip
-        if len(pool_state['data']) == 0:
-            break
-
-        for col_idx, key in enumerate(pool_state['data'][0]):
-            asset_balances = list(map(lambda x: x[key], pool_state['data']))
-            subplot_matrix[r][POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
-
-        # Reasoning for the legend placement:
-        # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
-        subplot_matrix[r][POOL_STATE_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-        subplot_matrix[r][POOL_STATE_PLOT_INDEX].set_facecolor('xkcd:midnight blue')
+        ramm_data_helper(
+            datum = pool_state,
+            subplot_matrix = subplot_matrix,
+            subplot_row_index = r,
+            subplot_col_index = POOL_STATE_PLOT_INDEX,
+            xlabel = 'Time (s)',
+            ylabel = 'Pool state',
+            subplot_label_suffix = ' pool state')
 
         # RAMM imbalance ratio plots
         imb_ratio = data['ramm_imb_ratios'][ramm_id]
