@@ -57,8 +57,6 @@ def animate_ramm_data():
         if len(pool_state['data']) == 0:
             break
 
-        #print(data['ramm_pool_states'])
-
         for col_idx, key in enumerate(pool_state['data'][0]):
             asset_balances = list(map(lambda x: x[key], pool_state['data']))
             subplot_matrix[r][POOL_STATE_PLOT_INDEX].plot(timestamps, asset_balances, label = key + ' balance', color = colors[col_idx])
