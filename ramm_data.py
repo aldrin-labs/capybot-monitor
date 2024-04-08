@@ -31,24 +31,42 @@ fig.tight_layout(pad=4.0)
 # See https://xkcd.com/color/rgb/
 colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
 
-def ramm_data_helper(*, datum, subplot_matrix, subplot_row_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
+def ramm_data_helper(*, category, subplot_matrix, subplot_row_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
+    """
+    Helper function to plot RAMM data.
+
+    Since plotting each RAMM's per-asset volume, imbalance ratios and pool state is almost the same,
+    this function abstracts the common logic behind that.
+
+    :param category: The category of data to plot - pool state, imbalance ratios or trading volumes.
+    :param subplot_matrix: The matrix of subplots to plot on. Each of its rows is an individual RAMM, and each of its columns is a category's plot.
+    :param subplot_row_index: The row index of the subplot matrix to plot on. Each index belongs to a different RAMM.
+    :param subplot_col_index:
+        The column index of the subplot matrix to plot on. Each index belongs to a different category's plot.
+        See `POOL_STATE_PLOT_INDEX` and similar above.
+    :param xlabel: The label for the label of that category's x-axis.
+    :param ylabel: The label for the label of that category's y-axis.
+    :param subplot_label_suffix:
+        The suffix to append to each asset in the label of the plot.
+        In the case of the legend for the RAMM imb. ratios' plot, it'll be " imb. ratio".
+    """
     subplot_matrix[subplot_row_index][subplot_col_index].clear()
 
     subplot_matrix[subplot_row_index][subplot_col_index].set_xlabel(xlabel)
     subplot_matrix[subplot_row_index][subplot_col_index].set_ylabel(ylabel)
 
-    timestamps = datum['time']
+    timestamps = category['time']
     start_ts = timestamps[0]
 
     # Convert UNIX timestamps to seconds since the start of the simulation
     timestamps = [ts - start_ts for ts in timestamps]
 
     # No recorded states, skip
-    if len(datum['data']) == 0:
+    if len(category['data']) == 0:
         return
 
-    for col_idx, key in enumerate(datum['data'][0]):
-        asset_data = list(map(lambda x: x[key], datum['data']))
+    for col_idx, key in enumerate(category['data'][0]):
+        asset_data = list(map(lambda x: x[key], category['data']))
         subplot_matrix[subplot_row_index][subplot_col_index].plot(timestamps, asset_data, label = key + subplot_label_suffix, color = colors[col_idx])
 
     # Reasoning for the legend placement:
@@ -70,7 +88,7 @@ def animate_ramm_data():
         # RAMM pool state plots
         pool_state = data['ramm_pool_states'][ramm_id]
         ramm_data_helper(
-            datum = pool_state,
+            category = pool_state,
             subplot_matrix = subplot_matrix,
             subplot_row_index = r,
             subplot_col_index = POOL_STATE_PLOT_INDEX,
