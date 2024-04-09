@@ -31,7 +31,7 @@ fig.tight_layout(pad=4.0)
 # See https://xkcd.com/color/rgb/
 colors = ["#dfff00", "#ca82e1", "#7aa0c4"]
 
-def ramm_data_helper(*, category, subplot_matrix, subplot_row_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix):
+def ramm_data_helper(*, category, subplot_matrix, subplot_row_index, subplot_col_index, xlabel, ylabel, subplot_label_suffix, plot_background_color):
     """
     Helper function to plot RAMM data.
 
@@ -49,6 +49,9 @@ def ramm_data_helper(*, category, subplot_matrix, subplot_row_index, subplot_col
     :param subplot_label_suffix:
         The suffix to append to each asset in the label of the plot.
         In the case of the legend for the RAMM imb. ratios' plot, it'll be " imb. ratio".
+    :param plot_background_color:
+        The background color that will be used in all plots for that category of data.
+        See https://xkcd.com/color/rgb/ for a neat list.
     """
     subplot_matrix[subplot_row_index][subplot_col_index].clear()
 
@@ -72,7 +75,7 @@ def ramm_data_helper(*, category, subplot_matrix, subplot_row_index, subplot_col
     # Reasoning for the legend placement:
     # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
     subplot_matrix[subplot_row_index][subplot_col_index].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-    subplot_matrix[subplot_row_index][subplot_col_index].set_facecolor('xkcd:midnight blue')
+    subplot_matrix[subplot_row_index][subplot_col_index].set_facecolor(plot_background_color)
 
 def animate_ramm_data():
     # Recall that this is going to be done once a second - visualizing logs from long-running
@@ -94,7 +97,8 @@ def animate_ramm_data():
             subplot_col_index = POOL_STATE_PLOT_INDEX,
             xlabel = 'Time (s)',
             ylabel = 'Pool state',
-            subplot_label_suffix = ' pool state')
+            subplot_label_suffix = ' pool state',
+            plot_background_color = 'xkcd:navy blue')
 
         # RAMM imbalance ratio plots
         imb_ratio = data['ramm_imb_ratios'][ramm_id]
@@ -105,7 +109,8 @@ def animate_ramm_data():
             subplot_col_index = IMB_RATIO_PLOT_INDEX,
             xlabel = 'Time (s)',
             ylabel = 'Imbalance ratios',
-            subplot_label_suffix = ' imb. ratio')
+            subplot_label_suffix = ' imb. ratio',
+            plot_background_color = 'xkcd:eggplant')
 
         # RAMM trading volume plots
         volume = data['ramm_volumes'][ramm_id]
@@ -116,7 +121,8 @@ def animate_ramm_data():
             subplot_col_index = VOLUME_PLOT_INDEX,
             xlabel = 'Time (s)',
             ylabel = 'Trading volumes',
-            subplot_label_suffix = ' volume')
+            subplot_label_suffix = ' volume',
+            plot_background_color = 'xkcd:indigo')
 
 # Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
