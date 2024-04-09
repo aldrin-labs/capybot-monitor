@@ -159,6 +159,8 @@ def animate_ramm_data():
 # Check if the user wants a statically or dynamically rendered plot
 switch = sys.argv[2]
 
+# This adjustment is to allow each subplot's label to fit within the window's frame.
+# Without it, they might be cut off, perhaps partially, by the boundaries of the GUI.
 plt.subplots_adjust(top=0.92)
 
 if switch == "--static":
