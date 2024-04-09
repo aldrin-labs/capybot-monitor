@@ -19,6 +19,9 @@ file = sys.argv[1]
 data = load_data(file)
 number_of_ramms = len(data["ramm_pool_states"])
 
+# Imbalance ratio threshold differential
+DELTA = 0.25
+
 POOL_STATE_PLOT_INDEX = 0
 IMB_RATIO_PLOT_INDEX = 1
 VOLUME_PLOT_INDEX = 2
@@ -90,16 +93,6 @@ def ramm_data_helper(
             label=key + subplot_label_suffix,
             color=colors[col_idx],
         )
-
-    # Reasoning for the legend placement:
-    # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
-    subplot_matrix[subplot_row_index][subplot_col_index].legend(
-        bbox_to_anchor=(0, 1.02, 1, 0.2),
-        loc="lower left",
-        mode="expand",
-        borderaxespad=0,
-        ncol=3,
-    )
     subplot_matrix[subplot_row_index][subplot_col_index].set_facecolor(
         plot_background_color
     )
@@ -125,8 +118,17 @@ def animate_ramm_data():
             subplot_col_index=POOL_STATE_PLOT_INDEX,
             xlabel="Time (s)",
             ylabel="Pool states",
-            subplot_label_suffix=" pool states",
+            subplot_label_suffix=" balance",
             plot_background_color="xkcd:navy blue",
+        )
+        # Reasoning for the legend placement:
+        # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot
+        subplot_matrix[r][POOL_STATE_PLOT_INDEX].legend(
+            bbox_to_anchor=(0, 1.02, 1, 0.2),
+            loc="lower left",
+            mode="expand",
+            borderaxespad=0,
+            ncol=3,
         )
 
         # RAMM imbalance ratio plots
@@ -141,6 +143,15 @@ def animate_ramm_data():
             subplot_label_suffix=" imb. ratio",
             plot_background_color="xkcd:eggplant",
         )
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].axhline(y = 1 - DELTA, color = 'black', linestyle = '--', label = '1 - δ / 1 + δ')
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].axhline(y = 1 + DELTA, color = 'black', linestyle = '--')
+        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].legend(
+            bbox_to_anchor=(0, 1.02, 1, 0.2),
+            loc="lower left",
+            mode="expand",
+            borderaxespad=0,
+            ncol=5,
+        )
 
         # RAMM trading volume plots
         volume = data["ramm_volumes"][ramm_id]
@@ -153,6 +164,13 @@ def animate_ramm_data():
             ylabel="Trading volumes",
             subplot_label_suffix=" volume",
             plot_background_color="xkcd:indigo",
+        )
+        subplot_matrix[r][VOLUME_PLOT_INDEX].legend(
+            bbox_to_anchor=(0, 1.02, 1, 0.2),
+            loc="lower left",
+            mode="expand",
+            borderaxespad=0,
+            ncol=3,
         )
 
 
