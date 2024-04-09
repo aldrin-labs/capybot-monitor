@@ -20,7 +20,7 @@ file = sys.argv[1]
 data = load_data(file);
 number_of_strategies = len(data['strategies']);
 
-fig, ax = plt.subplots(nrows = number_of_strategies, ncols = 1, figsize = (6, 10));
+fig, ax = plt.subplots(nrows = number_of_strategies, ncols = 1, figsize = (16, 10));
 fig.tight_layout(pad=2.0)
 
 def animate_strategies(j):
