@@ -98,27 +98,14 @@ def animate_ramm_data():
 
         # RAMM imbalance ratio plots
         imb_ratio = data['ramm_imb_ratios'][ramm_id]
-        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].clear()
-
-        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_xlabel('Time (s)')
-        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_ylabel('Imbalance ratios')
-
-        timestamps = imb_ratio['time']
-        start_ts = timestamps[0]
-
-        # Convert UNIX timestamps to seconds since the start of the simulation
-        timestamps = [ts - start_ts for ts in timestamps]
-
-        # No recorded states, skip
-        if len(imb_ratio['data']) == 0:
-            break
-
-        for col_idx, key in enumerate(imb_ratio['data'][0]):
-            imb_ratios = list(map(lambda x: x[key], imb_ratio['data']))
-            subplot_matrix[r][IMB_RATIO_PLOT_INDEX].plot(timestamps, imb_ratios, label = key + ' imb. ratio', color = colors[col_idx])
-
-        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=3);
-        subplot_matrix[r][IMB_RATIO_PLOT_INDEX].set_facecolor('xkcd:navy blue')
+        ramm_data_helper(
+            category = imb_ratio,
+            subplot_matrix = subplot_matrix,
+            subplot_row_index = r,
+            subplot_col_index = IMB_RATIO_PLOT_INDEX,
+            xlabel = 'Time (s)',
+            ylabel = 'Imbalance ratios',
+            subplot_label_suffix = ' imb. ratio')
 
         # RAMM trading volume plots
         volume = data['ramm_volumes'][ramm_id]
